@@ -1,0 +1,24 @@
+{
+  "name": "pianokeys",
+  "version": "1.0.0",
+  "description": "Piano keyboard rendered as SVG.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesperdj/pianokeys.git"
+  },
+  "keywords": [
+    "music",
+    "piano",
+    "keyboard"
+  ],
+  "author": "Jesper de Jong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jesperdj/pianokeys/issues"
+  },
+  "homepage": "https://github.com/jesperdj/pianokeys#readme"
+}
