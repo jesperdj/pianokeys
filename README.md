@@ -4,7 +4,7 @@ Piano keyboard rendered as SVG. This can be used to render a (partial) piano key
 
 ## Example
 
-Example HTML file:
+Example HTML file (`test.html`):
 
 ```html
 <!DOCTYPE html>
@@ -23,7 +23,7 @@ Example HTML file:
 </html>
 ```
 
-Example CSS file:
+Example CSS file (`test.css`):
 
 ```css
 body {
@@ -44,7 +44,7 @@ body {
 }
 ```
 
-Example script:
+Example script (`test.js`):
 
 ```javascript
 import PianoKeys from './index.js';
@@ -129,4 +129,4 @@ const keyboard = new PianoKeys.Keyboard(container, {
 });
 ```
 
-![Keyboard with custom default highlight colors](./example-04.png)
+![Keyboard with custom default highlight colors](./example-05.png)
