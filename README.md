@@ -61,6 +61,8 @@ The constructor of `PianoKeys.Keyboard` takes an optional `options` object as a 
         highest: 'C5'
     });
 
+![Keyboard staring at C2 and ending at C5](./example-02.png)
+
 Note names are specified as strings consisting of a note name and octave number. The lowest allowed note is `'C0'`, the highest allowed note is `'B#9'`. The default range is `'A0'` to `'C8'`.
 
 Note: The keyboard always starts and ends with a white key. If you specify a note name that corresponds to a black key, the next lower or higher white key will be used as the lowest or highest note.
@@ -75,12 +77,16 @@ You can specify properties for the outline of the keys and the color of the whit
         blackKeyFill: 'white'
     });
 
+![Keyboard with custom colors](./example-03.png)
+
 Call `fillKey()` to highlight keys:
 
     keyboard.fillKey('C3');
     keyboard.fillKey('Bb3');
     keyboard.fillKey('Eb4');
     keyboard.fillKey('G4');
+
+![Keyboard with highlighted keys](./example-04.png)
 
 And `clearKey()` to reset a key back to its unhighlighted state.
 
@@ -105,3 +111,4 @@ To change the default highlight colors, you can specify them in the options that
         blackKeyHighlightFill: 'orange'
     });
 
+![Keyboard with custom default highlight colors](./example-04.png)
