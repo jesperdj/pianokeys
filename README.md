@@ -2,6 +2,10 @@
 
 Piano keyboard rendered as SVG. This can be used to render a (partial) piano keyboard in the browser.
 
+This package is available in the npm registry. If you are using npm, you can install it into your project with:
+
+    npm i @jesperdj/pianokeys
+
 ## Example
 
 Example HTML file (`test.html`):
