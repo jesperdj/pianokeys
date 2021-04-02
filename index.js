@@ -1,16 +1,43 @@
-class ParseNoteError extends Error {
+// PianoKeys - Piano keyboard rendered as SVG
+//
+// https://github.com/jesperdj/pianokeys
+// https://www.npmjs.com/package/@jesperdj/pianokeys
+//
+// MIT License
+// 
+// Copyright (c) 2021 Jesper de Jong
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+class NoteNameParseError extends Error {
     constructor(noteName) {
         super('Invalid note name: ' + noteName);
-        this.name = 'ParseNoteError';
+        this.name = 'NoteNameParseError';
         this.noteName = noteName;
     }
 }
 
 function parsePitchClass(noteName) {
     const letter = noteName[0];
-    if (letter === '-') throw new ParseNoteError(noteName);
+    if (letter === '-') throw new NoteNameParseError(noteName);
     const pitchClass = 'C-D-EF-G-A-B'.indexOf(letter);
-    if (pitchClass == -1) throw new ParseNoteError(noteName);
+    if (pitchClass == -1) throw new NoteNameParseError(noteName);
     return pitchClass;
 }
 
@@ -18,20 +45,20 @@ function parseAccidental(noteName) {
     const letter = noteName[1];
     if (letter === 'b') return -1;
     if (letter === '#') return 1;
-    throw new ParseNoteError(noteName);
+    throw new NoteNameParseError(noteName);
 }
 
 function parseOctave(noteName) {
     const letter = noteName[noteName.length == 2 ? 1 : 2];
     const octave = '0123456789'.indexOf(letter);
-    if (octave == -1) throw new ParseNoteError(noteName);
+    if (octave == -1) throw new NoteNameParseError(noteName);
     return octave;
 }
 
 function parseNoteName(noteName) {
     if (noteName.length == 2) return parsePitchClass(noteName) + 12 * parseOctave(noteName);
     if (noteName.length == 3) return parsePitchClass(noteName) + parseAccidental(noteName) + 12 * parseOctave(noteName);
-    throw new ParseNoteError(noteName);
+    throw new NoteNameParseError(noteName);
 }
 
 function getOctave(note) {
@@ -91,9 +118,7 @@ class Keyboard {
         const offset = 168 * getOctave(lowest) + KEY_POSITIONS[getPitchClass(lowest)] - 1;
 
         for (let note = lowest; note <= highest; note++) {
-            const octave = getOctave(note);
-            const pitchClass = getPitchClass(note);
-            const x = 168 * octave + KEY_POSITIONS[pitchClass] - offset;
+            const x = 168 * getOctave(note) + KEY_POSITIONS[getPitchClass(note)] - offset;
 
             const whiteKey = isWhiteKey(note);
             const attrs = whiteKey ?
