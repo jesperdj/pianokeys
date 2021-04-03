@@ -33,19 +33,20 @@ class NoteNameParseError extends Error {
     }
 }
 
-function parsePitchClass(noteName) {
+function parseLetter(noteName) {
     const letter = noteName[0];
     if (letter === '-') throw new NoteNameParseError(noteName);
-    const pitchClass = 'C-D-EF-G-A-B'.indexOf(letter);
-    if (pitchClass == -1) throw new NoteNameParseError(noteName);
-    return pitchClass;
+    const number = 'C-D-EF-G-A-B'.indexOf(letter);
+    if (number == -1) throw new NoteNameParseError(noteName);
+    return number;
 }
 
 function parseAccidental(noteName) {
-    const letter = noteName[1];
-    if (letter === 'b') return -1;
-    if (letter === '#') return 1;
-    throw new NoteNameParseError(noteName);
+    switch (noteName[1]) {
+        case 'b': return -1;
+        case '#': return 1;
+        default: throw new NoteNameParseError(noteName);
+    }
 }
 
 function parseOctave(noteName) {
@@ -56,8 +57,8 @@ function parseOctave(noteName) {
 }
 
 function parseNoteName(noteName) {
-    if (noteName.length == 2) return parsePitchClass(noteName) + 12 * parseOctave(noteName);
-    if (noteName.length == 3) return parsePitchClass(noteName) + parseAccidental(noteName) + 12 * parseOctave(noteName);
+    if (noteName.length == 2) return parseLetter(noteName) + 12 * parseOctave(noteName);
+    if (noteName.length == 3) return parseLetter(noteName) + parseAccidental(noteName) + 12 * parseOctave(noteName);
     throw new NoteNameParseError(noteName);
 }
 
@@ -132,10 +133,14 @@ class Keyboard {
 
         this._keys = keys;
 
+        // Why it's better to set viewBox instead of width and height: https://css-tricks.com/scale-svg/
         const width = 2 + 24 * whiteKeys.length;
         const svg = createSvgElement('svg', { viewBox: `0 0 ${width} 142` });
+
+        // First add white keys and then black keys, so that the black keys are drawn on top
         for (const whiteKey of whiteKeys) svg.appendChild(whiteKey);
         for (const blackKey of blackKeys) svg.appendChild(blackKey);
+
         container.appendChild(svg);
     }
 
