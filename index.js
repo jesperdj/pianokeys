@@ -132,7 +132,8 @@ class Keyboard {
 
         this._keys = keys;
 
-        const svg = createSvgElement('svg', { width: 2 + 24 * whiteKeys.length, height: 142 });
+        const width = 2 + 24 * whiteKeys.length;
+        const svg = createSvgElement('svg', { viewBox: `0 0 ${width} 142` });
         for (const whiteKey of whiteKeys) svg.appendChild(whiteKey);
         for (const blackKey of blackKeys) svg.appendChild(blackKey);
         container.appendChild(svg);
