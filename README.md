@@ -2,6 +2,8 @@
 
 Piano keyboard rendered as SVG. This is not a complete app; it is meant to be used as a component in webapps.
 
+See the [demo application](https://github.com/jesperdj/pianokeys-demo).
+
 ## Install with npm
 
 You can install PianoKeys as an npm package in your project:
