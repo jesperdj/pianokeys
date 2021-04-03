@@ -1,57 +1,25 @@
 # PianoKeys
 
-Piano keyboard rendered as SVG. This can be used to render a (partial) piano keyboard in the browser.
+Piano keyboard rendered as SVG. This is not a complete app; it is meant to be used as a component in webapps.
 
-This package is available in the npm registry. If you are using npm, you can install it into your project with:
+## Install with npm
+
+You can install PianoKeys as an npm package in your project:
 
     npm i @jesperdj/pianokeys
 
-## Example
+## Using PianoKeys
 
-Example HTML file (`test.html`):
+Create a HTML `div` element in your HTML or using JavaScript that will hold the keyboard.
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="test.css">
-    <title>PianoKeys</title>
-</head>
-<body>
-    <div id="container"></div>
-    <script type="module" src="test.js"></script>
-</body>
-</html>
+<div id="container"></div>
 ```
 
-Example CSS file (`test.css`):
-
-```css
-body {
-    margin: 0;
-    padding: 0;
-}
-
-#container {
-    margin: 0;
-    padding: 0;
-    background-color: #888;
-}
-
-#container svg {
-    display: block;
-    margin: auto;
-    padding: 36px;
-}
-```
-
-Example script (`test.js`):
+Then in your script, create an instance of `PianoKeys.Keyboard`, passing it the container element.
 
 ```javascript
-import PianoKeys from './index.js';
+import PianoKeys from '@jesperdj/pianokeys';
 
 const container = document.getElementById('container');
 const keyboard = new PianoKeys.Keyboard(container);
@@ -61,12 +29,15 @@ This will render a keyboard corresponding to a regular 88-key piano, starting at
 
 ![88-key keyboard](./example-01.png)
 
-The constructor of `PianoKeys.Keyboard` takes an optional `options` object as a second parameter. This allows you to set the lowest note, highest note and style properties:
+### Rendering a partial keyboard
+
+The constructor of `PianoKeys.Keyboard` takes an optional second parameter, which is an object with options. You can render a partial keyboard by setting the `lowest` and `highest` properties in the options object to set the lowest and highest note (key). These are specified as a note name with an octave number, for example `'A0'`, `'Bb4'`, `'D#6'`.
+
+Note: The keyboard always starts and ends with a white key. If you specify a note name that corresponds to a black key, the next lower or higher white key will be used.
+
+Example:
 
 ```javascript
-import PianoKeys from './index.js';
-
-const container = document.getElementById('container');
 const keyboard = new PianoKeys.Keyboard(container, {
     lowest: 'C2',
     highest: 'C5'
@@ -75,11 +46,15 @@ const keyboard = new PianoKeys.Keyboard(container, {
 
 ![Keyboard staring at C2 and ending at C5](./example-02.png)
 
-Note names are specified as strings consisting of a note name and octave number. The lowest allowed note is `'C0'`, the highest allowed note is `'B#9'`. The default range is `'A0'` to `'C8'`.
+### Using custom colors
 
-Note: The keyboard always starts and ends with a white key. If you specify a note name that corresponds to a black key, the next lower or higher white key will be used as the lowest or highest note.
+You can set the following properties in the options object to specify custom colors:
 
-You can specify properties for the outline of the keys and the color of the white and black keys:
+- `keyStroke` - stroke style for the outline of keys
+- `whiteKeyFill` - fill style for the white keys
+- `blackKeyFill` - fill style for the black keys
+
+Example:
 
 ```javascript
 const keyboard = new PianoKeys.Keyboard(container, {
@@ -93,7 +68,9 @@ const keyboard = new PianoKeys.Keyboard(container, {
 
 ![Keyboard with custom colors](./example-03.png)
 
-Call `fillKey()` to highlight keys:
+### Highlighting keys
+
+To highlight keys, call `fillKey()` on the keyboard. Example:
 
 ```javascript
 keyboard.fillKey('C3');
@@ -104,22 +81,23 @@ keyboard.fillKey('G4');
 
 ![Keyboard with highlighted keys](./example-04.png)
 
-And `clearKey()` to reset a key back to its unhighlighted state.
-
-```javascript
-setTimeout(() => {
-    keyboard.clearKey('Eb4');
-    keyboard.clearKey('G4');
-}, 2000);
-```
-
-The `fillKey()` function optionally takes a second parameter to set the fill color to use instead of the default color.
+The `fillKey()` function optionally takes a second parameter to set the fill style to use for that key instead of the default highlight style.
 
 ```javascript
 keyboard.fillKey('C3', 'red');
 ```
 
-To change the default highlight colors, you can specify them in the options that you pass to the constructor:
+Call `clearKey()` to unhighlight a key.
+
+```javascript
+keyboard.clearKey('C3');
+```
+If you want to use a custom highlight fill style but you don't want to specify it in each call to `fillKey()`, then you can set the default highlight fill style by adding the following properties to the options that you pass to the constructor:
+
+- `whiteKeyHighlightFill` - default highlight fill style for white keys
+- `blackKeyHighlightFill` - default highlight fill style for black keys
+
+Example:
 
 ```javascript
 const keyboard = new PianoKeys.Keyboard(container, {
