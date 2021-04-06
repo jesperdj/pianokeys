@@ -25,41 +25,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-class NoteNameParseError extends Error {
-    constructor(noteName) {
-        super('Invalid note name: ' + noteName);
-        this.name = 'NoteNameParseError';
-        this.noteName = noteName;
-    }
-}
-
-function parseLetter(noteName) {
-    const letter = noteName[0];
-    if (letter === '-') throw new NoteNameParseError(noteName);
-    const number = 'C-D-EF-G-A-B'.indexOf(letter);
-    if (number == -1) throw new NoteNameParseError(noteName);
-    return number;
-}
-
-function parseAccidental(noteName) {
-    switch (noteName[1]) {
-        case 'b': return -1;
-        case '#': return 1;
-        default: throw new NoteNameParseError(noteName);
-    }
-}
-
-function parseOctave(noteName) {
-    const letter = noteName[noteName.length == 2 ? 1 : 2];
-    const octave = '0123456789'.indexOf(letter);
-    if (octave == -1) throw new NoteNameParseError(noteName);
-    return octave;
-}
-
 function parseNoteName(noteName) {
-    if (noteName.length == 2) return parseLetter(noteName) + 12 * parseOctave(noteName);
-    if (noteName.length == 3) return parseLetter(noteName) + parseAccidental(noteName) + 12 * parseOctave(noteName);
-    throw new NoteNameParseError(noteName);
+    class NoteNameParseError extends Error {
+        constructor() {
+            super('Invalid note name: ' + noteName);
+            this.name = 'NoteNameParseError';
+            this.noteName = noteName;
+        }
+    }
+
+    function parseLetter(letter) {
+        if (letter == '-') throw new NoteNameParseError();
+        const value = 'C-D-EF-G-A-B'.indexOf(letter);
+        if (value == -1) throw new NoteNameParseError();
+        return value;
+    }
+    
+    function parseAccidental(accidental) {
+        switch (accidental) {
+            case 'b': return -1;
+            case '#': return 1;
+            default: throw new NoteNameParseError();
+        }
+    }
+    
+    function parseOctave(octave) {
+        const value = '0123456789'.indexOf(octave);
+        if (value == -1) throw new NoteNameParseError();
+        return 12 * value;
+    }
+
+    switch (noteName.length) {
+        case 2: return parseLetter(noteName[0]) + parseOctave(noteName[1]);
+        case 3: return parseLetter(noteName[0]) + parseAccidental(noteName[1]) + parseOctave(noteName[2]);
+        default: throw new NoteNameParseError();
+    }
 }
 
 function getOctave(note) {
