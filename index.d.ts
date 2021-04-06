@@ -1,6 +1,6 @@
 declare class Keyboard {
     constructor(container: HTMLElement, options?: {});
-    fillKey(noteName: string, fill: string): void;
+    fillKey(noteName: string, fill?: string): void;
     clearKey(noteName: string): void;
 }
 declare const PianoKeys: {
