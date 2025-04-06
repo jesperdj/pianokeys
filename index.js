@@ -4,19 +4,19 @@
 // https://www.npmjs.com/package/@jesperdj/pianokeys
 //
 // MIT License
-// 
+//
 // Copyright (c) 2021 Jesper de Jong
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,7 +40,7 @@ function parseNoteName(noteName) {
         if (value == -1) throw new NoteNameParseError();
         return value;
     }
-    
+
     function parseAccidental(accidental) {
         switch (accidental) {
             case 'b': return -1;
@@ -48,7 +48,7 @@ function parseNoteName(noteName) {
             default: throw new NoteNameParseError();
         }
     }
-    
+
     function parseOctave(octave) {
         const value = '0123456789'.indexOf(octave);
         if (value == -1) throw new NoteNameParseError();
@@ -154,6 +154,15 @@ class Keyboard {
         const note = parseNoteName(noteName);
         const key = this._keys[note];
         if (key) key.setAttribute('fill', isWhiteKey(note) ? this._whiteKeyFill : this._blackKeyFill);
+    }
+
+    clearAllKeys() {
+        for (const note in this._keys) {
+            const key = this._keys[note];
+            if (key) {
+                key.setAttribute('fill', isWhiteKey(parseInt(note)) ? this._whiteKeyFill : this._blackKeyFill);
+            }
+        }
     }
 }
 
