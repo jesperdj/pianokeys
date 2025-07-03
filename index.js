@@ -31,6 +31,7 @@ function parseNoteName(noteName) {
             super('Invalid note name: ' + noteName);
             this.name = 'NoteNameParseError';
             this.noteName = noteName;
+            this.onKeyClickedCallback = null;
         }
     }
 
@@ -89,6 +90,14 @@ function createSvgElement(tag, attrs = {}) {
     return element;
 }
 
+/** Takes a MIDI note number and converts it to a string representing said note */
+function midiNoteToName(noteNumber) {
+    const noteNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+    const letter = noteNames[noteNumber % 12];
+    const octave = Math.floor(noteNumber / 12);
+    return `${letter}${octave}`;
+}
+
 const KEY_POSITIONS = [1, 18, 25, 42, 49, 73, 90, 97, 114, 121, 138, 145];
 
 class Keyboard {
@@ -127,6 +136,7 @@ class Keyboard {
                 { x, y: 1, width: 14, height:  90, rx: 2, ry: 2, stroke: keyStroke, 'stroke-width': 2, fill: blackKeyFill };
 
             const key = createSvgElement('rect', attrs);
+            key.id = `${note}`;
             keys[note] = key;
             if (whiteKey) whiteKeys.push(key); else blackKeys.push(key);
         }
@@ -142,6 +152,17 @@ class Keyboard {
         for (const blackKey of blackKeys) svg.appendChild(blackKey);
 
         container.appendChild(svg);
+
+        // listeners added for all keys
+        const keyRects = svg.querySelectorAll("rect");
+        for (const key of keyRects) {
+            key.addEventListener("click", (e) => {
+                if (this.onKeyClickedCallback) {
+                    this.onKeyClickedCallback(e, { note: e.target.id,
+                                                   name: midiNoteToName(e.target.id) });
+                }
+            });
+        }
     }
 
     fillKey(noteName, fill) {
@@ -162,6 +183,14 @@ class Keyboard {
             if (key) {
                 key.setAttribute('fill', isWhiteKey(parseInt(note)) ? this._whiteKeyFill : this._blackKeyFill);
             }
+        }
+    }
+
+    setOnKeyClick(callback) {
+        if (typeof callback === 'function') {
+            this.onKeyClickedCallback = callback;
+        } else {
+            throw new Error("Callback is not a function");
         }
     }
 }

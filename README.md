@@ -114,3 +114,19 @@ const keyboard = new PianoKeys.Keyboard(container, {
 ```
 
 ![Keyboard with custom default highlight colors](./example-05.png)
+
+### Responding to key presses
+
+You can set a custom function to be called when a key on PianoKeys is clicked.
+
+The function receives the `MouseEvent` as well as an object containing a note number and string representation of the note (eg: `Bb3` for Bb in the 3rd octave)
+
+Example:
+
+```javascript
+const keyboard = new PianoKeys.Keyboard(container);
+
+keyboard.setOnKeyClick((e, keyInfo) => {
+    console.log(`key pressed - note number: ${keyInfo.note} ${keyInfo.name}`);
+});
+```
