@@ -115,6 +115,39 @@ const keyboard = new PianoKeys.Keyboard(container, {
 
 ![Keyboard with custom default highlight colors](./example-05.png)
 
+### Customizing key geometry
+
+A number of options are available to customize the way the keys are drawn.
+
+- `keysAreRounded` - set to `false` if you want rectangular keys
+- `keyWidth` - specify the width of each white key. Default is `24`
+- `blackKeyWidth` - specify the width of each black key. Default is `14`
+- `blackKeyHeightRatio` - modify the height of black keys, expressed as a percentage of white key height. Valid range is 5% to 100%, expressed as a float (`0.05` to `1.0`)
+- `spacing` - specify a visual gap between white keys. Even values work best. Default is `0`
+- `keyStrokeWidth` - specify the width of any applied stroke. Default is `2`
+
+Example:
+
+```javascript
+const keys = new PianoKeys.Keyboard(document.getElementById('keys'), {
+    lowest: 'C3',
+    highest: 'C5',
+    whiteKeyFill: '#666E6F',
+    blackKeyFill: '#181818',
+    whiteKeyHighlightFill: '#D1D3D4',
+    keysAreRounded: false,
+    keyWidth: 28,
+    blackKeyWidth: 28,
+    blackKeyHeightRatio: 0.55,
+    spacing: 6,
+    keyStrokeWidth: 0,
+});
+
+keys.fillKey('D3');
+keys.fillKey('E3');
+```
+![Keyboard with customized key geometry](./example-06.png)
+
 ### Responding to key presses
 
 You can set a custom function to be called when a key on PianoKeys is clicked.
