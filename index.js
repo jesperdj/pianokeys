@@ -98,7 +98,36 @@ function midiNoteToName(noteNumber) {
     return `${letter}${octave}`;
 }
 
-const KEY_POSITIONS = [1, 18, 25, 42, 49, 73, 90, 97, 114, 121, 138, 145];
+function getPrevWhiteKey(note) {
+    if (note <= 0)
+        return -1;
+    else {
+        for (let k = note-1; k >= 0; k--) {
+            if (isWhiteKey(k))  {
+                return k;
+            }
+        }
+    }
+}
+
+/** Given white and black key widths, make an octave's worth of X-positions for rectangles to draw keys at */
+function makeKeyXPositions(whiteKeyWidth, blackKeyWidth, spacing, strokeW) {
+    let positions = [];
+    for (let k = 0; k < 12; k++) {
+        if (k == 0)
+            positions.push(strokeW/2);
+        else if (isWhiteKey(k)) {
+            // place adjacent to previous white key, with optional spacing
+            const x = positions[getPrevWhiteKey(k)] + whiteKeyWidth + spacing;
+            positions.push(x);
+        } else {
+            // black keys are placed between white keys
+            const x = positions[getPrevWhiteKey(k)] + whiteKeyWidth - (blackKeyWidth/2) + (spacing/2);
+            positions.push(x);
+        }
+    }
+    return positions;
+}
 
 class Keyboard {
     constructor(container, options = {}) {
@@ -121,19 +150,33 @@ class Keyboard {
         this._blackKeyFill = blackKeyFill;
         this._blackKeyHighlightFill = options.blackKeyHighlightFill || '#00CC88';
 
+        const keysAreRounded = options.keysAreRounded != null ? options.keysAreRounded : true;
+        const keyRadius = keysAreRounded ? 2 : 0;
+
         const keys = [];
         const whiteKeys = [];
         const blackKeys = [];
 
-        const offset = 168 * getOctave(lowest) + KEY_POSITIONS[getPitchClass(lowest)] - 1;
+        const keyHeight = 140;
+        const keyWidth = options.keyWidth || 24;
+        const blackKeyWidth = options.blackKeyWidth || 14;
+        const blackKeyHeightRatio = options.blackKeyHeightRatio || 0.64286; // default height: 90
+        if (blackKeyHeightRatio < 0.05 || blackKeyHeightRatio > 1.0) throw new RangeError("Invalid height ratio for black keys (0.05 to 1.0)")
+        const blackKeyHeight = Math.round(keyHeight * blackKeyHeightRatio);
+        const spacing = options.spacing || 0;  // spacing between white keys (for optional gap)
+        const keyStrokeWidth = options.keyStrokeWidth != null ? options.keyStrokeWidth : 2;
+
+        const KEY_POSITIONS = makeKeyXPositions(keyWidth, blackKeyWidth, spacing, keyStrokeWidth);
+
+        const offset = (7 * (keyWidth + spacing)) * getOctave(lowest) + KEY_POSITIONS[getPitchClass(lowest)] - 1;
 
         for (let note = lowest; note <= highest; note++) {
-            const x = 168 * getOctave(note) + KEY_POSITIONS[getPitchClass(note)] - offset;
-
+            const x = (7 * (keyWidth + spacing)) * getOctave(note) + KEY_POSITIONS[getPitchClass(note)] - offset;
             const whiteKey = isWhiteKey(note);
+
             const attrs = whiteKey ?
-                { x, y: 1, width: 24, height: 140, rx: 2, ry: 2, stroke: keyStroke, 'stroke-width': 2, fill: whiteKeyFill } :
-                { x, y: 1, width: 14, height:  90, rx: 2, ry: 2, stroke: keyStroke, 'stroke-width': 2, fill: blackKeyFill };
+                { x, y: (keyStrokeWidth/2), width: keyWidth, height: keyHeight, rx: keyRadius, ry: keyRadius, stroke: keyStroke, 'stroke-width': keyStrokeWidth, fill: whiteKeyFill } :
+                { x, y: (keyStrokeWidth/2), width: blackKeyWidth, height: blackKeyHeight, rx: keyRadius, ry: keyRadius, stroke: keyStroke, 'stroke-width': keyStrokeWidth, fill: blackKeyFill };
 
             const key = createSvgElement('rect', attrs);
             key.id = `${note}`;
@@ -144,8 +187,8 @@ class Keyboard {
         this._keys = keys;
 
         // Why it's better to set viewBox instead of width and height: https://css-tricks.com/scale-svg/
-        const width = 2 + 24 * whiteKeys.length;
-        const svg = createSvgElement('svg', { viewBox: `0 0 ${width} 142` });
+        const width = keyStrokeWidth + (keyWidth + spacing) * whiteKeys.length - spacing;
+        const svg = createSvgElement('svg', { viewBox: `0 0 ${width} ${keyStrokeWidth + keyHeight}` });
 
         // First add white keys and then black keys, so that the black keys are drawn on top
         for (const whiteKey of whiteKeys) svg.appendChild(whiteKey);
