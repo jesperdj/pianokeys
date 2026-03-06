@@ -32,6 +32,8 @@ function parseNoteName(noteName) {
             this.name = 'NoteNameParseError';
             this.noteName = noteName;
             this.onKeyClickedCallback = null;
+            this.onKeyMouseUpCallback = null;
+            this.onKeyMouseDownCallback = null;
         }
     }
 
@@ -157,7 +159,7 @@ class Keyboard {
         const whiteKeys = [];
         const blackKeys = [];
 
-        const keyHeight = 140;
+        const keyHeight = options.keyHeight != null ? options.keyHeight : 140;
         const keyWidth = options.keyWidth || 24;
         const blackKeyWidth = options.blackKeyWidth || 14;
         const blackKeyHeightRatio = options.blackKeyHeightRatio || 0.64286; // default height: 90
@@ -194,6 +196,25 @@ class Keyboard {
         for (const whiteKey of whiteKeys) svg.appendChild(whiteKey);
         for (const blackKey of blackKeys) svg.appendChild(blackKey);
 
+        // Mark central DO (C4) with a grey circle at the padded bottom of the SVG note
+        try {
+            const centralNote = parseNoteName('C4');
+            const centralKey = keys[centralNote];
+            if (centralKey) {
+                const kx = parseFloat(centralKey.getAttribute('x'));
+                const ky = parseFloat(centralKey.getAttribute('y'));
+                const kw = parseFloat(centralKey.getAttribute('width'));
+                const kh = parseFloat(centralKey.getAttribute('height'));
+                const radius = Math.min(8, kw / 6);
+                const cx = (kx + (kw / 2)).toString();
+                const cy = (ky + kh - (radius + 4)).toString();
+                const circle = createSvgElement('circle', { cx: cx, cy: cy, r: radius.toString(), fill: '#EEE', 'pointer-events': 'none' });
+                svg.appendChild(circle);
+            }
+        } catch (e) {
+            // ignore if parse fails or key not present
+        }
+
         container.appendChild(svg);
 
         // listeners added for all keys
@@ -205,6 +226,19 @@ class Keyboard {
                                                    name: midiNoteToName(e.target.id) });
                 }
             });
+            key.addEventListener("mouseup", (e) => {
+                if (this.onKeyMouseUpCallback) {
+                    this.onKeyMouseUpCallback(e, { note: e.target.id,
+                                                   name: midiNoteToName(e.target.id) });
+                }
+            });
+            key.addEventListener("mousedown", (e) => {
+                if (this.onKeyMouseDownCallback) {
+                    this.onKeyMouseDownCallback(e, { note: e.target.id,
+                                                   name: midiNoteToName(e.target.id) });
+                }
+            });            
+
         }
     }
 
@@ -232,6 +266,22 @@ class Keyboard {
     setOnKeyClick(callback) {
         if (typeof callback === 'function') {
             this.onKeyClickedCallback = callback;
+        } else {
+            throw new Error("Callback is not a function");
+        }
+    }
+
+    setOnKeyMouseDown(callback) {
+        if (typeof callback === 'function') {
+            this.onKeyMouseDownCallback = callback;
+        } else {
+            throw new Error("Callback is not a function");
+        }
+    }
+
+    setOnKeyMouseUp(callback) {
+        if (typeof callback === 'function') {
+            this.onKeyMouseUpCallback = callback;
         } else {
             throw new Error("Callback is not a function");
         }
